@@ -1,55 +1,62 @@
 using UnityEngine;
+using EdwinGameDev.UI;
+using EdwinGameDev.Gameplay;
 
-public class MatchManager : MonoBehaviour
+namespace EdwinGameDev.Match
 {
-    // Match
-    [Header("Match")]
-    [SerializeField] private Collider groundCollider;
-    [SerializeField] private GameObject holePrefab;
-    [SerializeField] private CameraFollow cameraFollow;
-    
-    [Header("Mesh")]
-    [SerializeField] private PolygonCollider2D hole2DCollider;
-    [SerializeField] private PolygonCollider2D ground2DCollider;
-    [SerializeField] private MeshCollider generatedMeshCollider;
-    [SerializeField] private MeshFilter generatedMeshFilter;
-
-    private MeshGenerator meshGenerator;
-
-    private void Start()
+    public class MatchManager : MonoBehaviour
     {
-        meshGenerator = new MeshGenerator(hole2DCollider, ground2DCollider, generatedMeshCollider, generatedMeshFilter);
-        
-        CreateNewHole();
-        DisableFoodCollision();
+        // Match
+        [Header("Match")] [SerializeField] private Collider groundCollider;
+        [SerializeField] private GameObject holePrefab;
+        [SerializeField] private CameraFollow cameraFollow;
 
-        meshGenerator.Make3DMeshCollider();
-    }
+        [Header("Mesh")] [SerializeField] private PolygonCollider2D hole2DCollider;
+        [SerializeField] private PolygonCollider2D ground2DCollider;
+        [SerializeField] private MeshCollider generatedMeshCollider;
+        [SerializeField] private MeshFilter generatedMeshFilter;
 
-    private void CreateNewHole()
-    {
-        GameObject holeGameObject = Instantiate(holePrefab);
-        Hole hole = holeGameObject.GetComponentInChildren<Hole>();
-        hole.Setup(groundCollider, generatedMeshCollider);
-        hole.OnHoleMove += meshGenerator.UpdateHoleMesh;
-        
-        cameraFollow.SetTarget(holeGameObject.transform);
-        hole.OnIncreaseHoleSize += cameraFollow.OnTargetSizeChanges;
-    }
+        private MeshGenerator meshGenerator;
 
-    private void DisableFoodCollision()
-    {
-        Food[] foodObjects = FindObjectsOfType<Food>();
+        [Header("UI")] [SerializeField] private UIManager uiManager;
 
-        foreach (Food food in foodObjects)
+        private void Start()
         {
-            Collider foodCollider = food.GetComponent<Collider>();
-            if (foodCollider == null)
-            {
-                continue;
-            }
+            meshGenerator = new MeshGenerator(hole2DCollider, ground2DCollider, generatedMeshCollider,
+                generatedMeshFilter);
 
-            Physics.IgnoreCollision(foodCollider, generatedMeshCollider, true);
+            CreateNewHole();
+            DisableFoodCollision();
+
+            meshGenerator.Make3DMeshCollider();
+        }
+
+        private void CreateNewHole()
+        {
+            GameObject holeGameObject = Instantiate(holePrefab);
+            Hole hole = holeGameObject.GetComponentInChildren<Hole>();
+            hole.Setup(groundCollider, generatedMeshCollider);
+            hole.OnHoleMove += meshGenerator.UpdateHoleMesh;
+
+            cameraFollow.SetTarget(holeGameObject.transform);
+            hole.OnIncreaseHoleSize += cameraFollow.OnTargetSizeChanges;
+            uiManager.SetupHole(hole);
+        }
+
+        private void DisableFoodCollision()
+        {
+            Food[] foodObjects = FindObjectsOfType<Food>();
+
+            foreach (Food food in foodObjects)
+            {
+                Collider foodCollider = food.GetComponent<Collider>();
+                if (foodCollider == null)
+                {
+                    continue;
+                }
+
+                Physics.IgnoreCollision(foodCollider, generatedMeshCollider, true);
+            }
         }
     }
 }
