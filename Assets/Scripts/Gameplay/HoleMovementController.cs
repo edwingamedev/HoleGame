@@ -13,6 +13,11 @@ public class HoleMovementController : MonoBehaviour
         Move();
     }
 
+    public void IncreaseSpeed()
+    {
+        speed += 1f;
+    }
+    
     private void Move()
     {
         Vector3 moveDir = new(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
