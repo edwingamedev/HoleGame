@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using EdwinGameDev.Gameplay;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,11 +9,17 @@ namespace EdwinGameDev.UI
 {
     public class ExperienceBar : MonoBehaviour
     {
+        [SerializeField] private TMP_Text currentLevel;
         public Image imageFill;
         private Hole hole;
-        private float fillSpeed = 4f;
+        private readonly float fillSpeed = 4f;
         private int experience;
         private Coroutine fillRoutine;
+
+        private void Awake()
+        {
+            imageFill.fillAmount = 0;
+        }
 
         public void SetHole(Hole hole)
         {
@@ -23,19 +31,40 @@ namespace EdwinGameDev.UI
         {
             experience += points;
 
-            float progress = (experience % hole.SizeThreshold) / (float)hole.SizeThreshold;
+            if (experience >= hole.PointsToLevelUpThreshold)
+            {
+                LevelUp();
 
-            if (fillRoutine != null)
-                StopCoroutine(fillRoutine);
+                return;
+            }
 
-            fillRoutine = StartCoroutine(SmoothFill(progress));
+            float targetFill = experience / (float)hole.PointsToLevelUpThreshold;
+            AnimateFillTo(targetFill);
         }
 
-        private IEnumerator SmoothFill(float target)
+        private void LevelUp()
+        {
+            experience = 0;
+            AnimateFillTo(targetFill: 1f, onComplete: () => { AnimateFillTo(0f); });
+
+            currentLevel.SetText($"{hole.CurrentLevel}");
+        }
+
+        private void AnimateFillTo(float targetFill, Action onComplete = null)
+        {
+            if (fillRoutine != null)
+            {
+                StopCoroutine(fillRoutine);
+            }
+
+            fillRoutine = StartCoroutine(SmoothFillRoutine(targetFill, onComplete));
+        }
+
+        private IEnumerator SmoothFillRoutine(float target, Action onComplete)
         {
             float start = imageFill.fillAmount;
-
             float time = 0f;
+
             while (time < 1f)
             {
                 time += Time.deltaTime * fillSpeed;
@@ -44,7 +73,7 @@ namespace EdwinGameDev.UI
             }
 
             imageFill.fillAmount = target;
+            onComplete?.Invoke();
         }
-        
     }
 }

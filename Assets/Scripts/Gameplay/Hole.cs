@@ -12,9 +12,10 @@ namespace EdwinGameDev.Gameplay
         private Collider groundCollider;
         private MeshCollider generatedMeshCollider;
 
-        [SerializeField] private int points;
-        public readonly int SizeThreshold = 5;
-
+        public int Points { get; private set; }
+        public readonly int PointsToLevelUpThreshold = 5;
+        public int CurrentLevel { get; private set; } = 1;
+        
         public event Action OnIncreaseHoleSize;
         public event Action<Transform> OnHoleMove;
         public event Action<int> OnConsume;
@@ -37,15 +38,21 @@ namespace EdwinGameDev.Gameplay
     
         public void AddPoints(Food food)
         {
-            points += food.points;
+            Points += food.points;
 
             OnConsume?.Invoke(food.points);
 
-            if (points % SizeThreshold != 0)
+            if (Points % PointsToLevelUpThreshold != 0)
             {
                 return;
             }
 
+            LevelUp();
+        }
+
+        private void LevelUp()
+        {
+            CurrentLevel++;
             StartCoroutine(nameof(IncreaseSize));
         }
 
