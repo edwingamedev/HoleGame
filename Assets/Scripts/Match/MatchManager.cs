@@ -31,10 +31,10 @@ public class MatchManager : MonoBehaviour
         GameObject holeGameObject = Instantiate(holePrefab);
         Hole hole = holeGameObject.GetComponentInChildren<Hole>();
         hole.Setup(groundCollider, generatedMeshCollider);
-        hole.OnIncreaseHoleSize += meshGenerator.UpdateHoleMesh;
+        hole.OnHoleMove += meshGenerator.UpdateHoleMesh;
         
         cameraFollow.SetTarget(holeGameObject.transform);
-        
+        hole.OnIncreaseHoleSize += cameraFollow.OnTargetSizeChanges;
     }
 
     private void DisableFoodCollision()

@@ -15,7 +15,8 @@ public class Hole : MonoBehaviour
 
     private readonly int sizeThreshold = 5;
 
-    public event Action<Transform> OnIncreaseHoleSize;
+    public event Action OnIncreaseHoleSize;
+    public event Action<Transform> OnHoleMove;
     public event Action<int> OnConsume;
     public bool HasCaptured(Food food) => capturedFoods.Contains(food);
     
@@ -26,13 +27,13 @@ public class Hole : MonoBehaviour
         
         if (movementController != null)
         {
-            movementController.OnMove += UpdateHole;
+            movementController.OnMove += OnMoveEventHandler;
         }
     }
 
-    private void UpdateHole()
+    private void OnMoveEventHandler()
     {
-        OnIncreaseHoleSize?.Invoke(transform);
+        OnHoleMove?.Invoke(transform);
     }
     
     public void AddPoints(Food food)
@@ -70,7 +71,8 @@ public class Hole : MonoBehaviour
             yield return null;
         }
 
-        UpdateHole();
+        OnIncreaseHoleSize?.Invoke();
+        OnMoveEventHandler();
     }
 
     public void ConfirmCapture(Food food)
