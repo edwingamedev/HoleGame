@@ -6,16 +6,22 @@ public class MeshGenerator
     private readonly PolygonCollider2D ground2DCollider;
     private readonly MeshCollider generatedMeshCollider;
     private readonly MeshFilter generatedMeshFilter;
+    
+    private Collider groundCollider;
     private Mesh generatedMesh;
 
     private const float InitialHoleScale = 2.5f;
 
-    public MeshGenerator(PolygonCollider2D hole2DCollider, PolygonCollider2D ground2DCollider, MeshCollider generatedMeshCollider, MeshFilter generatedMeshFilter)
+    public MeshGenerator(PolygonCollider2D hole2DCollider, PolygonCollider2D ground2DCollider, MeshCollider generatedMeshCollider, MeshFilter generatedMeshFilter, Collider groundCollider)
     {
         this.hole2DCollider = hole2DCollider;
         this.ground2DCollider = ground2DCollider;
         this.generatedMeshCollider = generatedMeshCollider;
         this.generatedMeshFilter = generatedMeshFilter;
+        this.groundCollider = groundCollider;
+        
+        SetupGround2DCollider();
+        groundCollider.GetComponent<Renderer>().enabled = false;
     }
 
     ~MeshGenerator()
@@ -28,6 +34,19 @@ public class MeshGenerator
         Object.Destroy(generatedMesh);
     }
 
+    private void SetupGround2DCollider()
+    {
+        Vector2 size = groundCollider.transform.localScale;
+
+        Vector2[] points = new Vector2[4];
+        points[0] = new Vector2(-size.x / 2, -size.y / 2);
+        points[1] = new Vector2(-size.x / 2, size.y / 2);
+        points[2] = new Vector2(size.x / 2, size.y / 2);
+        points[3] = new Vector2(size.x / 2, -size.y / 2);
+
+        ground2DCollider.SetPath(0, points);
+    }
+    
     public void UpdateHoleMesh(Transform holeTransform)
     {
         if (!holeTransform.hasChanged)

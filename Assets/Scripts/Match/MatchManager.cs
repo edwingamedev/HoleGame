@@ -22,8 +22,12 @@ namespace EdwinGameDev.Match
 
         private void Start()
         {
-            meshGenerator = new MeshGenerator(hole2DCollider, ground2DCollider, generatedMeshCollider,
-                generatedMeshFilter);
+            meshGenerator = new MeshGenerator(
+                hole2DCollider,
+                ground2DCollider,
+                generatedMeshCollider,
+                generatedMeshFilter,
+                groundCollider);
 
             CreateNewHole();
             DisableFoodCollision();
