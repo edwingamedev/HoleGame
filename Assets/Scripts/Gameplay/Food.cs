@@ -27,7 +27,7 @@ namespace EdwinGameDev.Gameplay
 
             ConsumerHole.AddPoints(this);
             pointsGiven = true;
-
+            
             StartCoroutine(ShrinkAndDestroy());
         }
 

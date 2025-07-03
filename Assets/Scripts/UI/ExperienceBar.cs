@@ -47,7 +47,7 @@ namespace EdwinGameDev.UI
             experience = 0;
             AnimateFillTo(targetFill: 1f, onComplete: () => { AnimateFillTo(0f); });
 
-            currentLevel.SetText($"{hole.CurrentLevel}");
+            currentLevel.SetText($"LVL {hole.CurrentLevel}");
         }
 
         private void AnimateFillTo(float targetFill, Action onComplete = null)
