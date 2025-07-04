@@ -11,7 +11,7 @@ namespace EdwinGameDev.UI
     {
         [SerializeField] private TMP_Text currentLevel;
         public Image imageFill;
-        private Hole hole;
+        [SerializeField] private Hole hole;
         private readonly float fillSpeed = 4f;
         private int experience;
         private Coroutine fillRoutine;
@@ -21,20 +21,31 @@ namespace EdwinGameDev.UI
             imageFill.fillAmount = 0;
         }
 
-        public void SetHole(Hole hole)
+        private void OnEnable()
         {
-            this.hole = hole;
             hole.OnConsume += HoleOnOnConsume;
+            hole.OnIncreaseHoleSize += LevelUp;
         }
 
+        private void OnDisable()
+        {
+            hole.OnConsume -= HoleOnOnConsume;
+            hole.OnIncreaseHoleSize -= LevelUp;
+        }
+        
         private void HoleOnOnConsume(int points)
         {
             experience += points;
 
             if (experience >= hole.PointsToLevelUpThreshold)
             {
-                LevelUp();
-
+                experience = 0;
+                AnimateFillTo(
+                    targetFill: 1f,
+                    onComplete: () =>
+                    {
+                        AnimateFillTo(0f);
+                    });
                 return;
             }
 
@@ -44,9 +55,6 @@ namespace EdwinGameDev.UI
 
         private void LevelUp()
         {
-            experience = 0;
-            AnimateFillTo(targetFill: 1f, onComplete: () => { AnimateFillTo(0f); });
-
             currentLevel.SetText($"LVL {hole.CurrentLevel}");
         }
 

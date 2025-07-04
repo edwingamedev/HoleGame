@@ -6,12 +6,16 @@ namespace EdwinGameDev.UI
     public class FloatingPointsController : MonoBehaviour
     {
         [SerializeField] private GameObject pointsDisplay;
-        private Hole hole;
+        [SerializeField] private Hole hole;
 
-        public void SetHole(Hole hole)
+        private void OnEnable()
         {
-            this.hole = hole;
             hole.OnConsume += HoleOnOnConsume;
+        }
+
+        private void OnDisable()
+        {
+            hole.OnConsume -= HoleOnOnConsume;
         }
 
         private void HoleOnOnConsume(int points)

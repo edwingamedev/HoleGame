@@ -1,40 +1,28 @@
 using System;
 using System.Collections;
-using EdwinGameDev.Gameplay;
 using UnityEngine;
 
 namespace EdwinGameDev.Gameplay
 {
     public class Hole : MonoBehaviour
     {
-        [SerializeField] private HoleMovementController movementController;
-        [SerializeField] private Material emission;
+        [SerializeField] private PlayerSettings playerSettings;
+        [SerializeField] private Material lightMaterial;
         
         private Collider groundCollider;
         private MeshCollider generatedMeshCollider;
 
         private int Points { get; set; }
-        public readonly int PointsToLevelUpThreshold = 5;
+        public int PointsToLevelUpThreshold => playerSettings.PointsToLevelUpThreshold;
         public int CurrentLevel { get; private set; } = 1;
         
         public event Action OnIncreaseHoleSize;
-        public event Action<Transform> OnHoleMove;
         public event Action<int> OnConsume;
         
         public void Setup(Collider groundCollider, MeshCollider generatedMeshCollider)
         {
             this.groundCollider = groundCollider;
             this.generatedMeshCollider = generatedMeshCollider;
-        
-            if (movementController != null)
-            {
-                movementController.OnMove += OnMoveEventHandler;
-            }
-        }
-
-        private void OnMoveEventHandler()
-        {
-            OnHoleMove?.Invoke(transform);
         }
     
         public void AddPoints(Food food)
@@ -65,28 +53,25 @@ namespace EdwinGameDev.Gameplay
             Vector3 endSize = transform.localScale * growMultiplier;
             float fixedY = transform.position.y;
             
-            float time = 0;
-            while (time < growDuration)
+            float elapsedTime = 0;
+            while (elapsedTime < growDuration)
             {
-                time += Time.deltaTime;
-                float t = Mathf.Clamp01(time / growDuration);
-                transform.localScale = Vector3.Lerp(startSize, endSize, t);
+                elapsedTime += Time.deltaTime;
+                float time = Mathf.Clamp01(elapsedTime / growDuration);
+                transform.localScale = Vector3.Lerp(startSize, endSize, time);
                 
                 Vector3 pos = transform.position;
                 pos.y = fixedY;
-                transform.position = pos;
                 
-                float alpha = Mathf.Sin(t * Mathf.PI) * 0.3f;
-                Color color = emission.GetColor("_Color");
+                float alpha = Mathf.Sin(time * Mathf.PI) * 0.3f;
+                Color color = lightMaterial.GetColor("_Color");
                 color.a = alpha;
-                emission.SetColor("_Color", color);
+                lightMaterial.SetColor("_Color", color);
                 
                 yield return null;
             }
 
-            movementController.IncreaseSpeed();
             OnIncreaseHoleSize?.Invoke();
-            OnMoveEventHandler();
         }
 
         private void OnTriggerEnter(Collider other)

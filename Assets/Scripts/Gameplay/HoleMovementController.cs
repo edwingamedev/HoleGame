@@ -1,81 +1,88 @@
-using System;
+using EdwinGameDev.EventSystem;
+using EdwinGameDev.Input;
 using UnityEngine;
 
-public class HoleMovementController : MonoBehaviour
+namespace EdwinGameDev.Gameplay
 {
-    [SerializeField] private float speed = 5;
-    
-    public event Action OnMove;
-    private Vector3 lastPos;
-    
-    private void Update()
+    public class HoleMovementController : MonoBehaviour
     {
-#if UNITY_EDITOR || UNITY_STANDALONE
-        MoveWithKeyboard();
-#else
-        MoveWithTouch();
-#endif
-    }
+        [SerializeField] private PlayerSettings playerSettings;
+        [SerializeField] private FloatingJoystick joystick;
+        [SerializeField] private Rigidbody holeRigidbody;
+        [SerializeField] private Hole hole;
 
-    public void IncreaseSpeed()
-    {
-        speed += 1f;
-    }
-    
-    private void MoveWithKeyboard()
-    {
-        Vector3 moveDir = new(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        private float speed;
+        private float turnSpeed;
+        private Vector3 lastPos;
 
-        if (moveDir == Vector3.zero)
+        private bool CanMove { get; set; } = true;
+
+        private void Setup()
         {
-            return;
+            speed = playerSettings.MoveSpeed;
+            turnSpeed = playerSettings.TurnSpeed;
         }
 
-        transform.position += moveDir * (speed * Time.deltaTime);
-        OnMove?.Invoke();
-
-        transform.hasChanged = false;
-    }
-    
-    private Vector2 touchStartPos;
-    private bool isTouching;
-    
-    private void MoveWithTouch()
-    {
-        if (Input.touchCount == 0)
-            return;
-
-        Touch touch = Input.GetTouch(0);
-
-        switch (touch.phase)
+        private void OnEnable()
         {
-            case TouchPhase.Began:
-                touchStartPos = touch.position;
-                isTouching = true;
-                break;
+            hole.OnIncreaseHoleSize += IncreaseSpeed;
+            GlobalEventDispatcher.AddSubscriber<Events.GameStarted>(OnGameStarted);
+            GlobalEventDispatcher.AddSubscriber<Events.GameEnded>(OnGameEnded);
+        }
 
-            case TouchPhase.Moved:
-            case TouchPhase.Stationary:
-                if (!isTouching)
-                    return;
 
-                Vector2 touchDelta = touch.position - touchStartPos;
+        private void OnDisable()
+        {
+            hole.OnIncreaseHoleSize -= IncreaseSpeed;
+            GlobalEventDispatcher.RemoveSubscriber<Events.GameStarted>(OnGameStarted);
+            GlobalEventDispatcher.RemoveSubscriber<Events.GameEnded>(OnGameEnded);
+        }
 
-                // Convert screen delta to world movement direction
-                Vector3 moveDir = new Vector3(touchDelta.x, 0, touchDelta.y).normalized;
+        private void Update()
+        {
+            if (!CanMove)
+            {
+                return;
+            }
 
-                transform.position += moveDir * (speed * Time.deltaTime);
-                OnMove?.Invoke();
-                transform.hasChanged = false;
+            MoveWithTouch();
+        }
 
-                // Optional: update start pos to make it more like dragging
-                touchStartPos = touch.position;
-                break;
+        private void OnGameStarted(Events.GameStarted _)
+        {
+            Setup();
+            CanMove = true;
+        }
 
-            case TouchPhase.Ended:
-            case TouchPhase.Canceled:
-                isTouching = false;
-                break;
+        private void OnGameEnded(Events.GameEnded _)
+        {
+            CanMove = false;
+        }
+
+        private void MoveWithTouch()
+        {
+            Vector3 direction = new(joystick.Horizontal, 0, joystick.Vertical);
+
+            if (direction.magnitude < 0.1f)
+            {
+                holeRigidbody.velocity = Vector3.zero;
+                return;
+            }
+
+            holeRigidbody.velocity = direction.normalized * speed;
+
+            Quaternion toRotation = Quaternion.LookRotation(direction, Vector3.up);
+            holeRigidbody.rotation =
+                Quaternion.Slerp(holeRigidbody.rotation, toRotation, turnSpeed * Time.fixedDeltaTime);
+
+            GlobalEventDispatcher.Publish(new Events.HoleMoved());
+
+            transform.hasChanged = false;
+        }
+
+        private void IncreaseSpeed()
+        {
+            speed += 1f;
         }
     }
 }

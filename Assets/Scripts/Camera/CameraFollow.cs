@@ -1,13 +1,21 @@
+using EdwinGameDev.EventSystem;
+using EdwinGameDev.Gameplay;
+using EdwinGameDev.Match;
 using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
+    [Header("Setup")] 
+    [SerializeField] private MatchManager matchManager;
+    [SerializeField] private PlayerSettings playerSettings;
+    
+    [Header("Configuration")]
     [SerializeField] private float baseOffset = 40f;
     [SerializeField] private float offsetStep = 10f;
-    [SerializeField] private int growthsPerZoomStep = 3;
     [SerializeField] private float smoothSpeed = 5f;
     [SerializeField] private float offsetLerpSpeed = 3f;
-    
+
+    private int GrowthsPerZoomStep =>playerSettings.PointsToLevelUpThreshold;
     private float offsetValue;
     private float currentOffsetValue;
     private readonly Vector3 offsetVector = new(0, 1, -1);
@@ -16,13 +24,24 @@ public class CameraFollow : MonoBehaviour
     private int currentZoomStep;
 
     private Transform target;
-    
+    private Hole hole;
+
     private void Awake()
     {
         offsetValue = baseOffset;
         currentOffsetValue = baseOffset;
     }
 
+    private void OnEnable()
+    {
+        GlobalEventDispatcher.AddSubscriber<Events.HoleCreated>(SetTarget);
+    }
+
+    private void OnDisable()
+    {
+        GlobalEventDispatcher.RemoveSubscriber<Events.HoleCreated>(SetTarget);
+    }
+    
     private void LateUpdate()
     {
         if (!target)
@@ -31,7 +50,7 @@ public class CameraFollow : MonoBehaviour
         }
 
         currentOffsetValue = Mathf.Lerp(currentOffsetValue, offsetValue, Time.deltaTime * offsetLerpSpeed);
-        
+
         Vector3 desiredPosition = target.position + (offsetVector * currentOffsetValue);
         Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed * Time.deltaTime);
         transform.position = smoothedPosition;
@@ -39,17 +58,25 @@ public class CameraFollow : MonoBehaviour
         transform.LookAt(target);
     }
 
-    public void SetTarget(Transform newTarget)
+    private void SetTarget(Events.HoleCreated holeEvent)
     {
-        target = newTarget;
+        if (hole)
+        {
+            hole.OnIncreaseHoleSize -= OnTargetSizeChanges;
+        }
+        
+        hole = holeEvent.Hole;
+        hole.OnIncreaseHoleSize += OnTargetSizeChanges;
+
+        target = hole.transform;
     }
 
-    public void OnTargetSizeChanges()
+    private void OnTargetSizeChanges()
     {
         growthCount++;
 
-        int newZoomStep = growthCount / growthsPerZoomStep;
-        
+        int newZoomStep = growthCount / GrowthsPerZoomStep;
+
         if (newZoomStep <= currentZoomStep)
         {
             return;
@@ -57,5 +84,10 @@ public class CameraFollow : MonoBehaviour
 
         currentZoomStep = newZoomStep;
         offsetValue = baseOffset + (offsetStep * currentZoomStep);
+    }
+    
+    private void OnDestroy()
+    {
+        hole.OnIncreaseHoleSize -= OnTargetSizeChanges;
     }
 }

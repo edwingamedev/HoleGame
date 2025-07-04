@@ -1,142 +1,167 @@
+using EdwinGameDev.EventSystem;
+using EdwinGameDev.Gameplay;
 using UnityEngine;
 
-public class MeshGenerator
+namespace EdwinGameDev.Match
 {
-    private readonly PolygonCollider2D hole2DCollider;
-    private readonly PolygonCollider2D ground2DCollider;
-    private readonly MeshCollider generatedMeshCollider;
-    private readonly MeshFilter generatedMeshFilter;
-    
-    private Collider groundCollider;
-    private Mesh generatedMesh;
-
-    private const float InitialHoleScale = 2.5f;
-
-    public MeshGenerator(PolygonCollider2D hole2DCollider, PolygonCollider2D ground2DCollider, MeshCollider generatedMeshCollider, MeshFilter generatedMeshFilter, Collider groundCollider)
+    public class MeshGenerator
     {
-        this.hole2DCollider = hole2DCollider;
-        this.ground2DCollider = ground2DCollider;
-        this.generatedMeshCollider = generatedMeshCollider;
-        this.generatedMeshFilter = generatedMeshFilter;
-        this.groundCollider = groundCollider;
+        private MeshGeneratorSettings meshGeneratorSettings;
+        private Mesh generatedMesh;
+
+        private const float InitialHoleScale = 2.5f;
+        private Hole targetHole;
+
+        public MeshGenerator(MeshGeneratorSettings meshGeneratorSettings)
+        {
+            this.meshGeneratorSettings = meshGeneratorSettings;
+            GlobalEventDispatcher.AddSubscriber<Events.HoleMoved>(UpdateHoleMesh);
+        }
+
+        ~MeshGenerator()
+        {
+            GlobalEventDispatcher.RemoveSubscriber<Events.HoleMoved>(UpdateHoleMesh);
         
-        SetupGround2DCollider();
-        groundCollider.GetComponent<Renderer>().enabled = false;
-    }
-
-    ~MeshGenerator()
-    {
-        if (generatedMesh == null)
-        {
-            return;
-        }
-
-        Object.Destroy(generatedMesh);
-    }
-
-    private void SetupGround2DCollider()
-    {
-        Vector2 size = groundCollider.transform.localScale;
-
-        Vector2[] points = new Vector2[4];
-        points[0] = new Vector2(-size.x / 2, -size.y / 2);
-        points[1] = new Vector2(-size.x / 2, size.y / 2);
-        points[2] = new Vector2(size.x / 2, size.y / 2);
-        points[3] = new Vector2(size.x / 2, -size.y / 2);
-
-        ground2DCollider.SetPath(0, points);
-    }
-    
-    public void UpdateHoleMesh(Transform holeTransform)
-    {
-        if (!holeTransform.hasChanged)
-        {
-            return;
-        }
-
-        hole2DCollider.transform.position = new Vector2(holeTransform.position.x, holeTransform.position.z);
-        hole2DCollider.transform.localScale = holeTransform.localScale * InitialHoleScale;
-
-        MakeHole2D();
-        Make3DMeshCollider();
-    }
-
-    private void MakeHole2D()
-    {
-        Vector2[] points = hole2DCollider.GetPath(0);
-
-        for (int i = 0; i < points.Length; i++)
-        {
-            points[i] = hole2DCollider.transform.TransformPoint(points[i]);
-        }
-
-        ground2DCollider.pathCount = 2;
-        ground2DCollider.SetPath(1, points);
-    }
-
-    public void Make3DMeshCollider()
-    {
-        generatedMesh = ground2DCollider.CreateMesh(useBodyPosition: true, useBodyRotation: true);
-        GenerateUVs();
-        generatedMesh.RecalculateNormals();
-
-        generatedMeshCollider.sharedMesh = generatedMesh;
-        generatedMeshFilter.mesh = generatedMesh;
-    }
-
-    private void GenerateUVs()
-    {
-        Vector3[] vertices = generatedMesh.vertices;
-        Vector2[] uvs = new Vector2[vertices.Length];
-
-        float minX = float.MaxValue, maxX = float.MinValue;
-        float minY = float.MaxValue, maxY = float.MinValue;
-
-        // Find bounds on X and Y
-        foreach (Vector3 vertex in vertices)
-        {
-            if (vertex.x < minX)
+            if (generatedMesh == null)
             {
-                minX = vertex.x;
+                return;
             }
 
-            if (vertex.x > maxX)
+            Object.Destroy(generatedMesh);
+        }
+
+        public void GenerateMesh()
+        {
+            SetupGround2DCollider();
+            meshGeneratorSettings.GroundCollider.GetComponent<Renderer>().enabled = false;
+            
+            Make3DMeshCollider();
+        }
+        
+        private void SetupGround2DCollider()
+        {
+            Vector2 size = meshGeneratorSettings.GroundCollider.transform.localScale;
+
+            Vector2[] points = new Vector2[4];
+            points[0] = new Vector2(-size.x / 2, -size.y / 2);
+            points[1] = new Vector2(-size.x / 2, size.y / 2);
+            points[2] = new Vector2(size.x / 2, size.y / 2);
+            points[3] = new Vector2(size.x / 2, -size.y / 2);
+
+            meshGeneratorSettings.Ground2DCollider.SetPath(0, points);
+        }
+
+        public void SetTarget(Hole targetHole)
+        {
+            if (this.targetHole)
             {
-                maxX = vertex.x;
+                this.targetHole.OnIncreaseHoleSize -= UpdateHoleMesh;
             }
 
-            if (vertex.y < minY)
+            this.targetHole = targetHole;
+            this.targetHole.OnIncreaseHoleSize += UpdateHoleMesh;
+        }
+
+        private void UpdateHoleMesh(Events.HoleMoved _)
+        {
+            UpdateHoleMesh();
+        }
+
+        private void UpdateHoleMesh()
+        {
+            if (!targetHole.transform.hasChanged)
             {
-                minY = vertex.y;
+                return;
             }
 
-            if (vertex.y > maxY)
+            meshGeneratorSettings.Hole2DCollider.transform.position =
+                new Vector2(
+                    targetHole.transform.position.x,
+                    targetHole.transform.position.z);
+        
+            meshGeneratorSettings.Hole2DCollider.transform.localScale = targetHole.transform.localScale * InitialHoleScale;
+
+            MakeHole2D();
+            Make3DMeshCollider();
+        }
+
+        private void MakeHole2D()
+        {
+            Vector2[] points = meshGeneratorSettings.Hole2DCollider.GetPath(0);
+
+            for (int i = 0; i < points.Length; i++)
             {
-                maxY = vertex.y;
+                points[i] = meshGeneratorSettings.Hole2DCollider.transform.TransformPoint(points[i]);
             }
+
+            meshGeneratorSettings.Ground2DCollider.pathCount = 2;
+            meshGeneratorSettings.Ground2DCollider.SetPath(1, points);
         }
 
-        float width = maxX - minX;
-        float height = maxY - minY;
-
-        if (Mathf.Approximately(width, 0f))
+        public void Make3DMeshCollider()
         {
-            width = 0.0001f;
+            generatedMesh = meshGeneratorSettings.Ground2DCollider.CreateMesh(useBodyPosition: true, useBodyRotation: true);
+            GenerateUVs();
+            generatedMesh.RecalculateNormals();
+
+            meshGeneratorSettings.GeneratedMeshCollider.sharedMesh = generatedMesh;
+            meshGeneratorSettings.GeneratedMeshFilter.mesh = generatedMesh;
         }
 
-        if (Mathf.Approximately(height, 0f))
+        private void GenerateUVs()
         {
-            height = 0.0001f;
-        }
+            Vector3[] vertices = generatedMesh.vertices;
+            Vector2[] uvs = new Vector2[vertices.Length];
 
-        // Normalize UVs
-        for (int i = 0; i < vertices.Length; i++)
-        {
-            float u = (vertices[i].x - minX) / width;
-            float v = (vertices[i].y - minY) / height;
-            uvs[i] = new Vector2(u, v);
-        }
+            float minX = float.MaxValue, maxX = float.MinValue;
+            float minY = float.MaxValue, maxY = float.MinValue;
 
-        generatedMesh.uv = uvs;
+            // Find bounds on X and Y
+            foreach (Vector3 vertex in vertices)
+            {
+                if (vertex.x < minX)
+                {
+                    minX = vertex.x;
+                }
+
+                if (vertex.x > maxX)
+                {
+                    maxX = vertex.x;
+                }
+
+                if (vertex.y < minY)
+                {
+                    minY = vertex.y;
+                }
+
+                if (vertex.y > maxY)
+                {
+                    maxY = vertex.y;
+                }
+            }
+
+            float width = maxX - minX;
+            float height = maxY - minY;
+
+            if (Mathf.Approximately(width, 0f))
+            {
+                width = 0.0001f;
+            }
+
+            if (Mathf.Approximately(height, 0f))
+            {
+                height = 0.0001f;
+            }
+
+            // Normalize UVs
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                float u = (vertices[i].x - minX) / width;
+                float v = (vertices[i].y - minY) / height;
+                uvs[i] = new Vector2(u, v);
+            }
+
+            generatedMesh.uv = uvs;
+        }
     }
 }

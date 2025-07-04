@@ -1,4 +1,4 @@
-using EdwinGameDev.Gameplay;
+using EdwinGameDev.EventSystem;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,18 +6,33 @@ namespace EdwinGameDev.UI
 {
     public class UIManager : MonoBehaviour
     {
-        [SerializeField] private FloatingPointsController pointsController;
-        [SerializeField] private ExperienceBar experienceBar;
-        
-        public void SetupHole(Hole hole)
+        [SerializeField] private Canvas menuCanvas;
+
+        private void OnEnable()
         {
-            pointsController.SetHole(hole);
-            experienceBar.SetHole(hole);
+            GlobalEventDispatcher.AddSubscriber<Events.GameStarted>(GameStarted);
+            GlobalEventDispatcher.AddSubscriber<Events.GameEnded>(GameEnded);
+        }
+
+        private void OnDisable()
+        {
+            GlobalEventDispatcher.RemoveSubscriber<Events.GameStarted>(GameStarted);
+            GlobalEventDispatcher.RemoveSubscriber<Events.GameEnded>(GameEnded);
+        }
+
+        private void GameStarted(Events.GameStarted _)
+        {
+            menuCanvas.enabled = false;
+        }
+
+        private void GameEnded(Events.GameEnded _)
+        {
+            menuCanvas.enabled = true;
         }
 
         public void RestartGame()
         {
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene("Game");
         }
     }
 }
