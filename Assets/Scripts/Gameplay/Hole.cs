@@ -1,23 +1,31 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace EdwinGameDev.Gameplay
 {
     public class Hole : MonoBehaviour
     {
+        // Settings
         [SerializeField] private PlayerSettings playerSettings;
         [SerializeField] private Material lightMaterial;
         
         private Collider groundCollider;
         private MeshCollider generatedMeshCollider;
 
-        private int currentPoints { get; set; }
-        public int PointsToLevelUpThreshold => playerSettings.PointsToLevelUpThreshold;
+        // Leveling
+        public int CurrentPoints { get; private set; }
         public int CurrentLevel { get; private set; } = 1;
+        public int PointsToLevelUpThreshold => playerSettings.PointsToLevelUpThreshold;
         
+        private readonly Queue<int> levelUpQueue = new();
+        private bool isLevelingUp;
+        
+        // Callbacks
         public event Action OnIncreaseHoleSize;
         public event Action<int> OnConsume;
+        public event Action<int> OnLevelUp;
         
         public void Setup(Collider groundCollider, MeshCollider generatedMeshCollider)
         {
@@ -27,25 +35,55 @@ namespace EdwinGameDev.Gameplay
     
         public void AddPoints(Food food)
         {
-            currentPoints += food.points;
+            CurrentPoints += food.points;
 
             if (CurrentLevel < playerSettings.MaxLevel)
             {
-                int elapsedLevel = Mathf.FloorToInt(currentPoints / PointsToLevelUpThreshold) + 1;
+                int elapsedLevel = Mathf.FloorToInt(CurrentPoints / PointsToLevelUpThreshold) + 1;
 
                 if (CurrentLevel < elapsedLevel)
                 {
-                    SetLevel(elapsedLevel);
+                    LevelUp(elapsedLevel);
                 }
             }
             
             OnConsume?.Invoke(food.points);
         }
 
-        private void SetLevel(int newLevel)
+        private void LevelUp(int newLevel)
         {
-            CurrentLevel = newLevel;
-            StartCoroutine(nameof(IncreaseSize));
+            int levelsToGain = newLevel - CurrentLevel;
+            if (levelsToGain <= 0) return;
+
+            for (int i = 0; i < levelsToGain; i++)
+            {
+                levelUpQueue.Enqueue(1);
+            }
+
+            if (!isLevelingUp)
+            {
+                StartCoroutine(ProcessLevelUps());
+            }
+        }
+        
+        private IEnumerator ProcessLevelUps()
+        {
+            isLevelingUp = true;
+
+            while (levelUpQueue.Count > 0)
+            {
+                levelUpQueue.Dequeue();
+
+                CurrentLevel++;
+
+                OnLevelUp?.Invoke(CurrentLevel);
+                
+                yield return IncreaseSize();
+
+                yield return new WaitForSeconds(0.1f);
+            }
+
+            isLevelingUp = false;
         }
 
         private IEnumerator IncreaseSize()
@@ -73,7 +111,7 @@ namespace EdwinGameDev.Gameplay
                 
                 yield return null;
             }
-
+            
             OnIncreaseHoleSize?.Invoke();
         }
 
