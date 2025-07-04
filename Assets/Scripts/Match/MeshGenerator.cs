@@ -33,7 +33,6 @@ namespace EdwinGameDev.Match
         public void GenerateMesh()
         {
             SetupGround2DCollider();
-            meshGeneratorSettings.GroundCollider.GetComponent<Renderer>().enabled = false;
             
             Make3DMeshCollider();
         }
@@ -91,7 +90,15 @@ namespace EdwinGameDev.Match
 
             for (int i = 0; i < points.Length; i++)
             {
-                points[i] = meshGeneratorSettings.Hole2DCollider.transform.TransformPoint(points[i]);
+                //points[i] = meshGeneratorSettings.Hole2DCollider.transform.TransformPoint(points[i]);
+                
+                // Transform from Hole2DCollider local space to world space
+                Vector3 worldPoint = meshGeneratorSettings.Hole2DCollider.transform.TransformPoint(points[i]);
+
+                // Transform from world space to Ground2DCollider local space
+                Vector3 localPoint = meshGeneratorSettings.Ground2DCollider.transform.InverseTransformPoint(worldPoint);
+
+                points[i] = new Vector2(localPoint.x, localPoint.y);
             }
 
             meshGeneratorSettings.Ground2DCollider.pathCount = 2;
@@ -100,7 +107,7 @@ namespace EdwinGameDev.Match
 
         public void Make3DMeshCollider()
         {
-            generatedMesh = meshGeneratorSettings.Ground2DCollider.CreateMesh(useBodyPosition: true, useBodyRotation: true);
+            generatedMesh = meshGeneratorSettings.Ground2DCollider.CreateMesh(useBodyPosition: true, useBodyRotation: false);
             GenerateUVs();
             generatedMesh.RecalculateNormals();
 

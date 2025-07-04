@@ -9,13 +9,14 @@ namespace EdwinGameDev.UI
 {
     public class ExperienceBar : MonoBehaviour
     {
+        [SerializeField] private PlayerSettings playerSettings;
         [SerializeField] private TMP_Text currentLevel;
-        public Image imageFill;
+        [SerializeField] private Image imageFill;
         [SerializeField] private Hole hole;
         private readonly float fillSpeed = 4f;
         private int experience;
         private Coroutine fillRoutine;
-
+        
         private void Awake()
         {
             imageFill.fillAmount = 0;
@@ -37,6 +38,13 @@ namespace EdwinGameDev.UI
         {
             experience += points;
 
+            if (hole.CurrentLevel >= playerSettings.MaxLevel)
+            {
+                imageFill.fillAmount = 1;
+                
+                return;
+            }
+            
             if (experience >= hole.PointsToLevelUpThreshold)
             {
                 experience = 0;

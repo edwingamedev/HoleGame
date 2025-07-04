@@ -7,7 +7,6 @@ public class CameraFollow : MonoBehaviour
 {
     [Header("Setup")] 
     [SerializeField] private MatchManager matchManager;
-    [SerializeField] private PlayerSettings playerSettings;
     
     [Header("Configuration")]
     [SerializeField] private float baseOffset = 40f;
@@ -15,7 +14,7 @@ public class CameraFollow : MonoBehaviour
     [SerializeField] private float smoothSpeed = 5f;
     [SerializeField] private float offsetLerpSpeed = 3f;
 
-    private int GrowthsPerZoomStep =>playerSettings.PointsToLevelUpThreshold;
+    private int GrowthsPerZoomStep => 3;
     private float offsetValue;
     private float currentOffsetValue;
     private readonly Vector3 offsetVector = new(0, 1, -1);

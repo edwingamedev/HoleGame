@@ -12,7 +12,7 @@ namespace EdwinGameDev.Gameplay
         private Collider groundCollider;
         private MeshCollider generatedMeshCollider;
 
-        private int Points { get; set; }
+        private int currentPoints { get; set; }
         public int PointsToLevelUpThreshold => playerSettings.PointsToLevelUpThreshold;
         public int CurrentLevel { get; private set; } = 1;
         
@@ -27,21 +27,24 @@ namespace EdwinGameDev.Gameplay
     
         public void AddPoints(Food food)
         {
-            Points += food.points;
+            currentPoints += food.points;
 
-            OnConsume?.Invoke(food.points);
-            
-            if (Points % PointsToLevelUpThreshold != 0)
+            if (CurrentLevel < playerSettings.MaxLevel)
             {
-                return;
-            }
+                int elapsedLevel = Mathf.FloorToInt(currentPoints / PointsToLevelUpThreshold) + 1;
 
-            LevelUp();
+                if (CurrentLevel < elapsedLevel)
+                {
+                    SetLevel(elapsedLevel);
+                }
+            }
+            
+            OnConsume?.Invoke(food.points);
         }
 
-        private void LevelUp()
+        private void SetLevel(int newLevel)
         {
-            CurrentLevel++;
+            CurrentLevel = newLevel;
             StartCoroutine(nameof(IncreaseSize));
         }
 

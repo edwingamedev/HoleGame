@@ -300,14 +300,14 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0, y: 1}
-      - {x: -0.7071, y: 0.7071}
-      - {x: -1, y: 0}
-      - {x: -0.7071, y: -0.7071}
-      - {x: 0, y: -1}
-      - {x: 0.7071, y: -0.7071}
-      - {x: 1, y: 0}
-      - {x: 0.7071, y: 0.7071}
+    - - {x: 0.924, y: 0.383}
+      - {x: 0.383, y: 0.924}
+      - {x: -0.383, y: 0.924}
+      - {x: -0.924, y: 0.383}
+      - {x: -0.924, y: -0.383}
+      - {x: -0.383, y: -0.924}
+      - {x: 0.383, y: -0.924}
+      - {x: 0.924, y: -0.383}
   m_UseDelaunayMesh: 0
 --- !u!1 &156465359
 GameObject:
@@ -581,7 +581,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eadddb77a4b1f534c9ce7d8b9af05317, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundCollider: {fileID: 0}
   holePrefab: {fileID: 5594194578057581407, guid: ff4d46ecd2218b54f9e28c9ab1d2899e, type: 3}
   hole2DCollider: {fileID: 91803996}
   ground2DCollider: {fileID: 2106316527}
@@ -1306,7 +1305,6 @@ MonoBehaviour:
   matchManager: {fileID: 273042241}
   baseOffset: 40
   offsetStep: 30
-  growthsPerZoomStep: 3
   smoothSpeed: 10
   offsetLerpSpeed: 3
 --- !u!1 &1028070645
@@ -1968,7 +1966,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2081534155}
   - component: {fileID: 2081534157}
-  - component: {fileID: 2081534158}
   - component: {fileID: 2081534156}
   m_Layer: 7
   m_Name: 3d GeneratedMesh
@@ -2022,48 +2019,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2081534154}
   m_Mesh: {fileID: 0}
---- !u!23 &2081534158
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2081534154}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 8966989dfbbd8354392dfc7b401a7d40, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &2106316525
 GameObject:
   m_ObjectHideFlags: 0
