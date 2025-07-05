@@ -7,7 +7,6 @@ namespace EdwinGameDev.Gameplay
     public class Food : MonoBehaviour
     {
         public int points;
-        private const int MatRenderQueue = 1999; // this is used to render the food inside the hole.
         public Hole ConsumerHole { get; set; }
     
         private bool pointsGiven;
@@ -15,12 +14,8 @@ namespace EdwinGameDev.Gameplay
         
         private void Awake()
         {
-            Material mat = GetComponent<Renderer>().material;
-            
             stageController = GetComponentInParent<IStage>();
             RegisterToStage();
-            
-            mat.renderQueue = MatRenderQueue;
         }
 
         private void RegisterToStage()

@@ -8,7 +8,7 @@ namespace EdwinGameDev.Stages
     public class StageController : MonoBehaviour, IStage
     {
         public Collider GroundCollider;
-        [SerializeField] private List<Food> foods = new();
+        private readonly List<Food> foods = new();
         public event Action OnLevelComplete;
 
         public void RegisterFood(Food food)
