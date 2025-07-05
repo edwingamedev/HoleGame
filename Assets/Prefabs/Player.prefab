@@ -224,6 +224,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 7291594693983731339}
+  animator: {fileID: 0}
 --- !u!1 &1531183497305266028
 GameObject:
   m_ObjectHideFlags: 0
@@ -596,6 +597,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 3861110602659126788}
+  animator: {fileID: 2227749164116574194}
 --- !u!1 &2947408820683644597
 GameObject:
   m_ObjectHideFlags: 0
@@ -1183,7 +1185,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab1dadd1bc1d4b45a3c6046db5149981, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pointsDisplay: {fileID: 2799524856508608438}
+  pointsDisplay: {fileID: 6449670137140685851}
   hole: {fileID: 5868107490090694784}
 --- !u!1 &5594194578057581407
 GameObject:

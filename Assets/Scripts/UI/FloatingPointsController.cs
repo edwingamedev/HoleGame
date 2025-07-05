@@ -1,12 +1,20 @@
+using System;
 using EdwinGameDev.Gameplay;
+using EdwinGameDev.PoolingService;
 using UnityEngine;
 
 namespace EdwinGameDev.UI
 {
     public class FloatingPointsController : MonoBehaviour
     {
-        [SerializeField] private GameObject pointsDisplay;
+        [SerializeField] private FlyingPoints pointsDisplay;
         [SerializeField] private Hole hole;
+        private PoolingProvider<FlyingPoints> poolingProvider;
+
+        private void Start()
+        {
+            poolingProvider = new(transform, pointsDisplay, 10);
+        }
 
         private void OnEnable()
         {
@@ -20,10 +28,8 @@ namespace EdwinGameDev.UI
 
         private void HoleOnOnConsume(int points)
         {
-            GameObject go = Instantiate(pointsDisplay, transform.position, Quaternion.identity, transform);
-            FlyingPoints flyingPoints = go.GetComponent<FlyingPoints>();
-            flyingPoints.SetPoints(points);
-            go.SetActive(true);
+            IPool<FlyingPoints> item = poolingProvider.Get();
+            item.GetObjectByType().SetPoints(points);
         }
     }
 }

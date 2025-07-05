@@ -1,5 +1,6 @@
 using EdwinGameDev.EventSystem;
 using EdwinGameDev.Gameplay;
+using EdwinGameDev.Stages;
 using UnityEngine;
 
 namespace EdwinGameDev.Match
@@ -24,11 +25,12 @@ namespace EdwinGameDev.Match
 
         private float matchTimer;
         private bool matchIsOn;
-
+        
+        private IStage currentStage;
+        
         private void Start()
         {
             matchTimer = MatchDuration;
-
             
             DisableFoodCollision();
 
@@ -37,8 +39,12 @@ namespace EdwinGameDev.Match
 
         private void GenerateLevel()
         {
-            GameObject level = Instantiate(gameSettings.Levels[0]);
-            groundCollider = level.GetComponent<LevelController>().GroundCollider;
+            StageController gameSettingsStage = gameSettings.Stages[0];
+            
+            GameObject level = Instantiate(gameSettingsStage.gameObject);
+            level.GetComponent<IStage>().OnLevelComplete += GameOver;
+            
+            groundCollider = level.GetComponent<StageController>().GroundCollider;
             
             meshGenerator = new MeshGenerator(new MeshGeneratorSettings(
                 hole2DCollider,

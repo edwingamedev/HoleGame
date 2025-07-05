@@ -1304,7 +1304,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   matchManager: {fileID: 273042241}
   baseOffset: 40
-  offsetStep: 30
+  offsetStep: 40
   smoothSpeed: 10
   offsetLerpSpeed: 3
 --- !u!1 &1028070645

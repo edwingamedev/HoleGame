@@ -1,4 +1,5 @@
 using System.Collections;
+using EdwinGameDev.Stages;
 using UnityEngine;
 
 namespace EdwinGameDev.Gameplay
@@ -10,12 +11,26 @@ namespace EdwinGameDev.Gameplay
         public Hole ConsumerHole { get; set; }
     
         private bool pointsGiven;
-    
+        private IStage stageController;
+        
         private void Awake()
         {
             Material mat = GetComponent<Renderer>().material;
-
+            
+            stageController = GetComponentInParent<IStage>();
+            RegisterToStage();
+            
             mat.renderQueue = MatRenderQueue;
+        }
+
+        private void RegisterToStage()
+        {
+            stageController?.RegisterFood(this);
+        }
+        
+        private void UnregisterFromStage()
+        {
+            stageController?.UnregisterFood(this);
         }
 
         public void Consume()
@@ -28,10 +43,10 @@ namespace EdwinGameDev.Gameplay
             ConsumerHole.AddPoints(this);
             pointsGiven = true;
             
-            StartCoroutine(ShrinkAndDestroy());
+            StartCoroutine(ShrinkAndDisable());
         }
 
-        private IEnumerator ShrinkAndDestroy()
+        private IEnumerator ShrinkAndDisable()
         {
             float duration = 0.4f;
             float time = 0f;
@@ -44,7 +59,9 @@ namespace EdwinGameDev.Gameplay
                 yield return null;
             }
 
-            Destroy(gameObject);
+            
+            gameObject.SetActive(false);
+            UnregisterFromStage();
         }
     }
 }

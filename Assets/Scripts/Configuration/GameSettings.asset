@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: GameSettings
   m_EditorClassIdentifier: 
   MatchDuration: 300
-  Levels:
-  - {fileID: 6575720455066408497, guid: af61a9ac503a28a40a04839c10f9d4e9, type: 3}
+  Stages:
+  - {fileID: 8332883565832961479, guid: af61a9ac503a28a40a04839c10f9d4e9, type: 3}
