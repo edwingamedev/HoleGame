@@ -17,7 +17,7 @@ namespace EdwinGameDev.Input
         private void Awake()
         {
             canvas = GetComponentInParent<Canvas>();
-            joystick.SetActive(false); // hide at start
+            joystick.SetActive(false);
         }
 
         public void OnPointerDown(PointerEventData eventData)

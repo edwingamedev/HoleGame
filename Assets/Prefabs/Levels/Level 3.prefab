@@ -26,8 +26,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.05, y: 1.05, z: 1.05}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7119369819284866247}
   - {fileID: 823040238848432479}
@@ -307,7 +307,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 200, y: 200.00002, z: 200.00002}
+  m_LocalScale: {x: 210, y: 210, z: 210}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 4219234817956200944}
@@ -804,8 +804,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76c112660898e7a49ab70cef5d76dcf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelDuration: 300
   GroundCollider: {fileID: 2963740155546540421}
+  levelDuration: 300
   levelStatus:
     playerSettings: {fileID: 11400000, guid: 8a82a52186dd7a7408395da7d937a32e, type: 2}
     experience: 844

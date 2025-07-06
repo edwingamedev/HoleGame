@@ -13,7 +13,6 @@ namespace EdwinGameDev.Gameplay
 
         private float speed;
         private float turnSpeed;
-        private Vector3 lastPos;
 
         private bool CanMove { get; set; } = true;
 
@@ -29,7 +28,6 @@ namespace EdwinGameDev.Gameplay
             GlobalEventDispatcher.AddSubscriber<Events.GameStarted>(OnGameStarted);
             GlobalEventDispatcher.AddSubscriber<Events.GameEnded>(OnGameEnded);
         }
-
 
         private void OnDisable()
         {

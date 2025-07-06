@@ -1,24 +1,26 @@
-using EdwinGameDev.Gameplay;
 using UnityEngine;
 
-public class ConsumeZone : MonoBehaviour
+namespace EdwinGameDev.Gameplay
 {
-    private Hole hole;
-
-    private void Awake()
+    public class ConsumeZone : MonoBehaviour
     {
-        hole = GetComponentInParent<Hole>();
-    }
+        private Hole hole;
 
-    private void OnTriggerExit(Collider other)
-    {
-        Food food = other.GetComponent<Food>();
-        if (!food)
+        private void Awake()
         {
-            return;
+            hole = GetComponentInParent<Hole>();
         }
 
-        food.ConsumerHole = hole;
-        food.Consume();
+        private void OnTriggerExit(Collider other)
+        {
+            Food food = other.GetComponent<Food>();
+            if (!food)
+            {
+                return;
+            }
+
+            food.ConsumerHole = hole;
+            food.Consume();
+        }
     }
 }
