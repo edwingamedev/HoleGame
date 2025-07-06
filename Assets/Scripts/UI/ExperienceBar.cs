@@ -14,15 +14,21 @@ namespace EdwinGameDev.UI
         [SerializeField] private TMP_Text experienceText;
         [SerializeField] private Image imageFill;
         [SerializeField] private Hole hole;
-
-        // Animation
+        
         private readonly float fillSpeed = 4f;
 
         private void Awake()
         {
-            imageFill.fillAmount = 0;
+            Init();
         }
 
+        private void Init()
+        {
+            currentLevel.SetText($"LVL {hole.CurrentLevel}");
+            experienceText.SetText($"{hole.ExpOnCurrentLevel} / {hole.ExpToLevelUp}");
+            imageFill.fillAmount = 0;
+        }
+        
         private void OnEnable()
         {
             hole.OnConsume += HoleOnConsume;

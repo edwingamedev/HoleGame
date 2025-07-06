@@ -9,7 +9,7 @@ namespace EdwinGameDev.UI
     {
         [SerializeField] private Button button;
         [SerializeField] private  TMP_Text text;
-        public int levelToLoad;
+        [SerializeField] private int levelToLoad;
         public event Action<int> OnClick;
 
         private void Start()

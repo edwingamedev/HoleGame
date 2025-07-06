@@ -15,7 +15,7 @@ namespace EdwinGameDev.Levels
         [ReadOnly] [SerializeField] private int maxLevel;
         
         [Header("Missing Exp")]
-        [ReadOnly] [SerializeField] private int remainingExp;
+        [ReadOnly] [SerializeField] private int remainingExp; // used to see remaining Exp on inspector
 
         public void CheckMaxLevel(Transform targetTransform)
         {

@@ -40,10 +40,12 @@ namespace EdwinGameDev.Levels
         {
             foods.Remove(food);
 
-            if (foods.Count <= 0)
+            if (foods.Count > 0)
             {
-                OnLevelComplete?.Invoke();
+                return;
             }
+
+            OnLevelComplete?.Invoke();
         }
     }
 }

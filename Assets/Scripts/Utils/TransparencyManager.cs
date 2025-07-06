@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using EdwinGameDev.EventSystem;
 using UnityEngine;
-using EdwinGameDev.Utils;
 
 namespace EdwinGameDev.Utils
 {

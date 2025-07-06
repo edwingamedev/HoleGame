@@ -16,11 +16,6 @@ namespace EdwinGameDev.UI
             text.SetText($"+{points}");
         }
 
-        public bool isEnabled()
-        {
-            return gameObject.activeInHierarchy;
-        }
-
         public void EnableObject()
         {
             gameObject.SetActive(true);

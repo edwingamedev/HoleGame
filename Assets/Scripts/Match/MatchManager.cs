@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using EdwinGameDev.EventSystem;
 using EdwinGameDev.Gameplay;
@@ -22,7 +21,6 @@ namespace EdwinGameDev.Match
         private MeshGenerator meshGenerator;
         private Collider groundCollider;
 
-        private float matchDuration;
         private float matchTimer;
         private bool matchIsOn;
         
@@ -36,7 +34,6 @@ namespace EdwinGameDev.Match
         private void GenerateLevel()
         {
             LevelController gameSettingsLevel = gameSettings.Levels[gameSettings.selectedLevel];
-            matchDuration = gameSettingsLevel.LevelDuration();
             currentLevel = gameSettingsLevel;
             GameObject level = Instantiate(gameSettingsLevel.gameObject);
             level.GetComponent<ILevel>().OnLevelComplete += GameOver;
@@ -75,7 +72,7 @@ namespace EdwinGameDev.Match
 
         private void StartTimer()
         {
-            matchTimer = matchDuration;
+            matchTimer = currentLevel.LevelDuration();
         }
 
         private void Update()
