@@ -1,6 +1,7 @@
 using System.Collections;
-using EdwinGameDev.Stages;
+using EdwinGameDev.Levels;
 using UnityEngine;
+using CandyCoded.HapticFeedback;
 
 namespace EdwinGameDev.Gameplay
 {
@@ -10,22 +11,22 @@ namespace EdwinGameDev.Gameplay
         public Hole ConsumerHole { get; set; }
     
         private bool pointsGiven;
-        private IStage stageController;
+        private ILevel levelController;
         
         private void Awake()
         {
-            stageController = GetComponentInParent<IStage>();
+            levelController = GetComponentInParent<ILevel>();
             RegisterToStage();
         }
 
         private void RegisterToStage()
         {
-            stageController?.RegisterFood(this);
+            levelController?.RegisterFood(this);
         }
         
         private void UnregisterFromStage()
         {
-            stageController?.UnregisterFood(this);
+            levelController?.UnregisterFood(this);
         }
 
         public void Consume()
@@ -55,7 +56,6 @@ namespace EdwinGameDev.Gameplay
                 time += Time.deltaTime;
                 yield return null;
             }
-
             
             gameObject.SetActive(false);
             UnregisterFromStage();

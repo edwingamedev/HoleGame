@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using EdwinGameDev.Gameplay;
 using UnityEngine;
 
-namespace EdwinGameDev.Stages
+namespace EdwinGameDev.Levels
 {
-    public class StageController : MonoBehaviour, IStage
+    public class LevelController : MonoBehaviour, ILevel
     {
         public Collider GroundCollider;
         private readonly List<Food> foods = new();

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -7,7 +8,12 @@ namespace EdwinGameDev.Utils
     public class SceneLoaderToButton : MonoBehaviour
     {
         [SerializeField] private string sceneToLoad;
-        [SerializeField] private Button button;
+        private Button button;
+
+        private void Awake()
+        {
+            button = GetComponent<Button>();
+        }
 
         private void OnEnable()
         {

@@ -53,7 +53,11 @@ namespace EdwinGameDev.Gameplay
         private void LevelUp(int newLevel)
         {
             int levelsToGain = newLevel - CurrentLevel;
-            if (levelsToGain <= 0) return;
+            
+            if (levelsToGain <= 0)
+            {
+                return;
+            }
 
             for (int i = 0; i < levelsToGain; i++)
             {

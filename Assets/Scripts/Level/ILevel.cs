@@ -1,9 +1,9 @@
 using System;
 using EdwinGameDev.Gameplay;
 
-namespace EdwinGameDev.Stages
+namespace EdwinGameDev.Levels
 {
-    public interface IStage
+    public interface ILevel
     {
         event Action OnLevelComplete;
         void RegisterFood(Food food);

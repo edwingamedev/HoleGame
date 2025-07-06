@@ -1330,7 +1330,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   matchManager: {fileID: 273042241}
   baseOffset: 40
-  offsetStep: 40
+  offsetStep: 50
   smoothSpeed: 10
   offsetLerpSpeed: 3
 --- !u!114 &963194230
@@ -1646,6 +1646,7 @@ GameObject:
   - component: {fileID: 1454528286}
   - component: {fileID: 1454528285}
   - component: {fileID: 1454528284}
+  - component: {fileID: 1454528287}
   m_Layer: 5
   m_Name: RestartButton
   m_TagString: Untagged
@@ -1767,6 +1768,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1454528282}
   m_CullTransparentMesh: 1
+--- !u!114 &1454528287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1454528282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b35d1792b7a919e4fa9ac4788f2f1a35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1679904940
 GameObject:
   m_ObjectHideFlags: 0
@@ -1920,6 +1933,7 @@ GameObject:
   - component: {fileID: 2071858357}
   - component: {fileID: 2071858356}
   - component: {fileID: 2071858359}
+  - component: {fileID: 2071858360}
   m_Layer: 5
   m_Name: MainMenuButton
   m_TagString: Untagged
@@ -2042,7 +2056,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneToLoad: MainMenu
-  button: {fileID: 2071858356}
+--- !u!114 &2071858360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2071858354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b35d1792b7a919e4fa9ac4788f2f1a35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2081534154
 GameObject:
   m_ObjectHideFlags: 0
