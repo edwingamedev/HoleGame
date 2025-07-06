@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace EdwinGameDev.Gameplay
 {
@@ -20,9 +19,10 @@ namespace EdwinGameDev.Gameplay
         public int CurrentLevel { get; private set; } = 1;
         public int ExpOnCurrentLevel { get; private set; }
         public int ExpToLevelUp => playerSettings.ExpNeededOnLevel(CurrentLevel);
-        
+
         private readonly Queue<int> levelUpQueue = new();
         private bool isLevelingUp;
+        private int ProjectedLevel => CurrentLevel + levelUpQueue.Count;
 
         // Callbacks
         public event Action OnIncreaseHoleSize;
@@ -40,27 +40,27 @@ namespace EdwinGameDev.Gameplay
             TotalPoints += food.points;
             ExpOnCurrentLevel += food.points;
 
-            if (CurrentLevel < playerSettings.MaxLevel)
+            if (ProjectedLevel < playerSettings.MaxLevel)
             {
-                int newLevel = playerSettings.GetLevelFromTotalPoints(TotalPoints);
-
-                if (CurrentLevel < newLevel)
-                {
-                    LevelUp(newLevel);
-                }
+                CheckLevelUp();
             }
 
             OnConsume?.Invoke(food.points);
         }
 
+        private void CheckLevelUp()
+        {
+            int newLevel = playerSettings.GetLevelFromTotalPoints(TotalPoints);
+
+            if (ProjectedLevel < newLevel)
+            {
+                LevelUp(newLevel);
+            }
+        }
+
         private void LevelUp(int newLevel)
         {
-            int levelsToGain = newLevel - CurrentLevel;
-
-            if (levelsToGain <= 0)
-            {
-                return;
-            }
+            int levelsToGain = newLevel - ProjectedLevel;
 
             for (int i = 0; i < levelsToGain; i++)
             {

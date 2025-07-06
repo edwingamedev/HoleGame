@@ -8,33 +8,37 @@ public class PlayerSettings : ScriptableObject
     public int NextLevelModifier = 7;
     public int BaseLevelExp = 10;
     public int MaxLevel = 20;
-    
+
     public int ExpNeededOnLevel(int level) =>
         BaseLevelExp + NextLevelModifier * (level - 1);
-        
+
+    // Upper bound binary search
     public int GetLevelFromTotalPoints(int totalPoints)
     {
-        int level = 1;
-        int remainingPoints = totalPoints;
+        int low = 1;
+        int high = MaxLevel;
 
-        while (level < MaxLevel)
+        while (low < high)
         {
-            int xpToLevelUp = ExpNeededOnLevel(level);
-            if (remainingPoints < xpToLevelUp)
-            {
-                break;
-            }
+            int mid = (low + high + 1) / 2;
+            int requiredExp = TotalExpToReachLevel(mid);
 
-            remainingPoints -= xpToLevelUp;
-            level++;
+            if (totalPoints >= requiredExp)
+            {
+                low = mid;
+            }
+            else
+            {
+                high = mid - 1;
+            }
         }
 
-        return level;
+        return low;
     }
-    
+
     public int TotalExpToReachLevel(int level)
     {
-        int n = level - 1;
-        return (n * (2 * BaseLevelExp + (n - 1) * NextLevelModifier)) / 2;
+        int baseLevel = level - 1;
+        return baseLevel * (2 * BaseLevelExp + (baseLevel - 1) * NextLevelModifier) / 2;
     }
 }
