@@ -1,6 +1,6 @@
 using EdwinGameDev.EventSystem;
 using EdwinGameDev.Gameplay;
-using EdwinGameDev.Stages;
+using EdwinGameDev.Levels;
 using UnityEngine;
 
 namespace EdwinGameDev.Match
@@ -26,7 +26,7 @@ namespace EdwinGameDev.Match
         private float matchTimer;
         private bool matchIsOn;
         
-        private IStage currentStage;
+        private ILevel currentLevel;
         
         private void Start()
         {
@@ -39,12 +39,12 @@ namespace EdwinGameDev.Match
 
         private void GenerateLevel()
         {
-            StageController gameSettingsStage = gameSettings.Stages[0];
+            LevelController gameSettingsLevel = gameSettings.Stages[gameSettings.selectedLevel];
             
-            GameObject level = Instantiate(gameSettingsStage.gameObject);
-            level.GetComponent<IStage>().OnLevelComplete += GameOver;
+            GameObject level = Instantiate(gameSettingsLevel.gameObject);
+            level.GetComponent<ILevel>().OnLevelComplete += GameOver;
             
-            groundCollider = level.GetComponent<StageController>().GroundCollider;
+            groundCollider = level.GetComponent<LevelController>().GroundCollider;
             
             meshGenerator = new MeshGenerator(new MeshGeneratorSettings(
                 hole2DCollider,

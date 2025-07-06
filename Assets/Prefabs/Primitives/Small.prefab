@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6914313683276441287}
   - component: {fileID: 1220444137609792642}
   - component: {fileID: 7053267853361600987}
+  - component: {fileID: -8441029566705289852}
   m_Layer: 6
   m_Name: Small
   m_TagString: Food
@@ -147,3 +148,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   points: 1
+--- !u!114 &-8441029566705289852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3284875970157443352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8115a3ea858f0894389f296e5aabc9a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

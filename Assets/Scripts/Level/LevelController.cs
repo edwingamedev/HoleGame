@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using EdwinGameDev.Gameplay;
 using UnityEngine;
 
-namespace EdwinGameDev.Stages
+namespace EdwinGameDev.Levels
 {
-    public class StageController : MonoBehaviour, IStage
+    public class LevelController : MonoBehaviour, ILevel
     {
         public Collider GroundCollider;
-        [SerializeField] private List<Food> foods = new();
+        private readonly List<Food> foods = new();
         public event Action OnLevelComplete;
 
         public void RegisterFood(Food food)
