@@ -7,12 +7,12 @@ namespace EdwinGameDev.Gameplay
 {
     public class Food : MonoBehaviour
     {
-        [field: SerializeField] public int points { get; private set; }
+        public int points;
         public Hole ConsumerHole { get; set; }
-
+    
         private bool pointsGiven;
         private ILevel levelController;
-
+        
         private void Awake()
         {
             levelController = GetComponentInParent<ILevel>();
@@ -23,7 +23,7 @@ namespace EdwinGameDev.Gameplay
         {
             levelController?.RegisterFood(this);
         }
-
+        
         private void UnregisterFromStage()
         {
             levelController?.UnregisterFood(this);
@@ -32,7 +32,7 @@ namespace EdwinGameDev.Gameplay
         public void Consume()
         {
             HapticFeedback.HeavyFeedback();
-
+            
             if (pointsGiven || ConsumerHole == null)
             {
                 return;
@@ -40,7 +40,7 @@ namespace EdwinGameDev.Gameplay
 
             ConsumerHole.AddPoints(this);
             pointsGiven = true;
-
+            
             StartCoroutine(ShrinkAndDisable());
         }
 
@@ -56,7 +56,7 @@ namespace EdwinGameDev.Gameplay
                 time += Time.deltaTime;
                 yield return null;
             }
-
+            
             gameObject.SetActive(false);
             UnregisterFromStage();
         }
