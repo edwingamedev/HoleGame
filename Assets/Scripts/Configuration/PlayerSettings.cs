@@ -12,6 +12,12 @@ public class PlayerSettings : ScriptableObject
     public int ExpNeededOnLevel(int level) =>
         BaseLevelExp + NextLevelModifier * (level - 1);
 
+    public int TotalExpToReachLevel(int level)
+    {
+        int baseLevel = level - 1;
+        return baseLevel * (2 * BaseLevelExp + (baseLevel - 1) * NextLevelModifier) / 2;
+    }
+
     // Upper bound binary search
     public int GetLevelFromTotalPoints(int totalPoints)
     {
@@ -34,11 +40,5 @@ public class PlayerSettings : ScriptableObject
         }
 
         return low;
-    }
-
-    public int TotalExpToReachLevel(int level)
-    {
-        int baseLevel = level - 1;
-        return baseLevel * (2 * BaseLevelExp + (baseLevel - 1) * NextLevelModifier) / 2;
     }
 }

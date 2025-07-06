@@ -15,14 +15,14 @@ namespace EdwinGameDev.Gameplay
         private MeshCollider generatedMeshCollider;
 
         // Leveling
-        public int TotalPoints { get; private set; }
+        private int TotalPoints { get; set; }
         public int CurrentLevel { get; private set; } = 1;
-        public int ExpOnCurrentLevel { get; private set; }
+        public int ProjectedLevel => CurrentLevel + levelUpQueue.Count;
+        public int ExpOnCurrentLevel => TotalPoints - playerSettings.TotalExpToReachLevel(CurrentLevel);
         public int ExpToLevelUp => playerSettings.ExpNeededOnLevel(CurrentLevel);
 
         private readonly Queue<int> levelUpQueue = new();
         private bool isLevelingUp;
-        private int ProjectedLevel => CurrentLevel + levelUpQueue.Count;
 
         // Callbacks
         public event Action OnIncreaseHoleSize;
@@ -38,7 +38,6 @@ namespace EdwinGameDev.Gameplay
         public void AddPoints(Food food)
         {
             TotalPoints += food.points;
-            ExpOnCurrentLevel += food.points;
 
             if (ProjectedLevel < playerSettings.MaxLevel)
             {
@@ -84,7 +83,6 @@ namespace EdwinGameDev.Gameplay
                 levelUpQueue.Dequeue();
 
                 CurrentLevel++;
-                ExpOnCurrentLevel = 0;
 
                 OnLevelUp?.Invoke(CurrentLevel);
 
