@@ -38,6 +38,8 @@ namespace EdwinGameDev.Gameplay
             ConsumerHole.AddPoints(this);
             pointsGiven = true;
             
+            HapticFeedback.HeavyFeedback();
+            
             StartCoroutine(ShrinkAndDisable());
         }
 
