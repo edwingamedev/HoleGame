@@ -15,13 +15,13 @@ namespace EdwinGameDev.Match
         public MeshGenerator(MeshGeneratorSettings meshGeneratorSettings)
         {
             this.meshGeneratorSettings = meshGeneratorSettings;
+            GlobalEventDispatcher.RemoveSubscriber<Events.HoleMoved>(UpdateHoleMesh);
             GlobalEventDispatcher.AddSubscriber<Events.HoleMoved>(UpdateHoleMesh);
         }
 
-        ~MeshGenerator()
+        public void Dispose()
         {
             GlobalEventDispatcher.RemoveSubscriber<Events.HoleMoved>(UpdateHoleMesh);
-        
             if (generatedMesh == null)
             {
                 return;
@@ -90,8 +90,6 @@ namespace EdwinGameDev.Match
 
             for (int i = 0; i < points.Length; i++)
             {
-                //points[i] = meshGeneratorSettings.Hole2DCollider.transform.TransformPoint(points[i]);
-                
                 // Transform from Hole2DCollider local space to world space
                 Vector3 worldPoint = meshGeneratorSettings.Hole2DCollider.transform.TransformPoint(points[i]);
 
@@ -105,70 +103,13 @@ namespace EdwinGameDev.Match
             meshGeneratorSettings.Ground2DCollider.SetPath(1, points);
         }
 
-        public void Make3DMeshCollider()
+        private void Make3DMeshCollider()
         {
             generatedMesh = meshGeneratorSettings.Ground2DCollider.CreateMesh(useBodyPosition: true, useBodyRotation: false);
-            GenerateUVs();
             generatedMesh.RecalculateNormals();
 
             meshGeneratorSettings.GeneratedMeshCollider.sharedMesh = generatedMesh;
             meshGeneratorSettings.GeneratedMeshFilter.mesh = generatedMesh;
-        }
-
-        private void GenerateUVs()
-        {
-            Vector3[] vertices = generatedMesh.vertices;
-            Vector2[] uvs = new Vector2[vertices.Length];
-
-            float minX = float.MaxValue, maxX = float.MinValue;
-            float minY = float.MaxValue, maxY = float.MinValue;
-
-            // Find bounds on X and Y
-            foreach (Vector3 vertex in vertices)
-            {
-                if (vertex.x < minX)
-                {
-                    minX = vertex.x;
-                }
-
-                if (vertex.x > maxX)
-                {
-                    maxX = vertex.x;
-                }
-
-                if (vertex.y < minY)
-                {
-                    minY = vertex.y;
-                }
-
-                if (vertex.y > maxY)
-                {
-                    maxY = vertex.y;
-                }
-            }
-
-            float width = maxX - minX;
-            float height = maxY - minY;
-
-            if (Mathf.Approximately(width, 0f))
-            {
-                width = 0.0001f;
-            }
-
-            if (Mathf.Approximately(height, 0f))
-            {
-                height = 0.0001f;
-            }
-
-            // Normalize UVs
-            for (int i = 0; i < vertices.Length; i++)
-            {
-                float u = (vertices[i].x - minX) / width;
-                float v = (vertices[i].y - minY) / height;
-                uvs[i] = new Vector2(u, v);
-            }
-
-            generatedMesh.uv = uvs;
         }
     }
 }

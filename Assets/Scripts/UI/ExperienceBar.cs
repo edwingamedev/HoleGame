@@ -18,11 +18,12 @@ namespace EdwinGameDev.UI
 
         private readonly Queue<Func<IEnumerator>> fillAnimationQueue = new();
 
+        // Animation
         private readonly float fillSpeed = 4f;
-        private int lastKnownLevel = 1;
         private bool isAnimating;
-
         private Coroutine fillRoutine;
+        
+        private int lastKnownLevel = 1;
 
         private void Awake()
         {
@@ -40,56 +41,53 @@ namespace EdwinGameDev.UI
             hole.OnConsume -= HoleOnConsume;
             hole.OnLevelUp -= OnLevelUp;
         }
-
-        private void HoleOnConsume(int points)
+        
+        private void HoleOnConsume(int _)
         {
             bool reachedMaxLevel = hole.CurrentLevel >= playerSettings.MaxLevel;
-
+        
             if (reachedMaxLevel)
             {
                 imageFill.fillAmount = 1;
                 experienceText.SetText("MAX");
                 return;
             }
-
+        
             // Compare if we gained full level(s)
             int gainedLevels = hole.CurrentLevel - lastKnownLevel;
-
-            int expIntoCurrentLevel = hole.CurrentPoints;
-            int expToLevelUp = hole.PointsToLevelUpThreshold * hole.CurrentLevel;
-
-            experienceText.SetText($"{expIntoCurrentLevel} / {expToLevelUp}");
-
+            
+            experienceText.SetText($"{hole.ExpOnCurrentLevel} / {hole.ExpToLevelUp}");
+        
             if (gainedLevels > 0)
             {
                 for (int i = 0; i < gainedLevels; i++)
                 {
                     fillAnimationQueue.Enqueue(() => SmoothFillRoutine(1f, () => { imageFill.fillAmount = 0f; }));
                 }
-
+        
                 // Fill bar to leftover exp after multiple level-ups
-                int remainingPoints = hole.CurrentPoints % hole.PointsToLevelUpThreshold;
-                float finalFill = remainingPoints / (float)hole.PointsToLevelUpThreshold;
-
+                int remainingPoints = hole.TotalPoints % playerSettings.NextLevelModifier;
+                float finalFill = remainingPoints / (float)playerSettings.NextLevelModifier;
+        
                 fillAnimationQueue.Enqueue(() => SmoothFillRoutine(finalFill, null));
             }
             else
             {
-                int currentLevelThreshold = hole.PointsToLevelUpThreshold;
-                float targetFill = hole.CurrentPoints % currentLevelThreshold / (float)currentLevelThreshold;
+                int currentLevelThreshold = playerSettings.NextLevelModifier;
+                float targetFill = hole.TotalPoints % currentLevelThreshold / (float)currentLevelThreshold;
                 fillAnimationQueue.Enqueue(() => SmoothFillRoutine(targetFill, null));
             }
-
+        
             lastKnownLevel = hole.CurrentLevel;
-
+        
             if (isAnimating)
             {
                 return;
             }
-
+        
             StartCoroutine(RunFillQueue());
         }
-
+        
         private void OnLevelUp(int newLevel)
         {
             if (newLevel >= playerSettings.MaxLevel)
@@ -101,7 +99,6 @@ namespace EdwinGameDev.UI
 
             StartCoroutine(PlayLevelUpSequence(newLevel));
         }
-
 
         private IEnumerator PlayLevelUpSequence(int newLevel)
         {
@@ -120,7 +117,6 @@ namespace EdwinGameDev.UI
                 imageFill.fillAmount = 1;
             }
         }
-
 
         private IEnumerator RunFillQueue()
         {

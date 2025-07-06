@@ -1,6 +1,5 @@
 using EdwinGameDev.EventSystem;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace EdwinGameDev.UI
 {
@@ -28,11 +27,6 @@ namespace EdwinGameDev.UI
         private void GameEnded(Events.GameEnded _)
         {
             menuCanvas.enabled = true;
-        }
-
-        public void RestartGame()
-        {
-            SceneManager.LoadScene("Game");
         }
     }
 }

@@ -5,14 +5,29 @@ using UnityEngine;
 
 namespace EdwinGameDev.Levels
 {
+    [Serializable]
     public class LevelController : MonoBehaviour, ILevel
     {
         public Collider GroundCollider;
-        private readonly List<Food> foods = new();
+        [SerializeField] private int levelDuration;
+        [SerializeField] private LevelStatus levelStatus = new();
+
+        private List<Food> foods = new();
+        
+        public int LevelDuration() => levelDuration;
+        public List<Food> GetFoods() => foods;
+        
         public event Action OnLevelComplete;
+
+        private void OnValidate()
+        {
+            levelStatus.CheckMaxLevel(transform);
+        }
 
         public void RegisterFood(Food food)
         {
+            GetComponentsInChildren(true, foods);
+
             if (foods.Contains(food))
             {
                 return;
@@ -24,7 +39,7 @@ namespace EdwinGameDev.Levels
         public void UnregisterFood(Food food)
         {
             foods.Remove(food);
-        
+
             if (foods.Count <= 0)
             {
                 OnLevelComplete?.Invoke();

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace EdwinGameDev.Gameplay
 {
@@ -10,50 +11,52 @@ namespace EdwinGameDev.Gameplay
         // Settings
         [SerializeField] private PlayerSettings playerSettings;
         [SerializeField] private Material lightMaterial;
-        
+
         private Collider groundCollider;
         private MeshCollider generatedMeshCollider;
 
         // Leveling
-        public int CurrentPoints { get; private set; }
+        public int TotalPoints { get; private set; }
         public int CurrentLevel { get; private set; } = 1;
-        public int PointsToLevelUpThreshold => playerSettings.PointsToLevelUpThreshold;
+        public int ExpOnCurrentLevel { get; private set; }
+        public int ExpToLevelUp => playerSettings.ExpNeededOnLevel(CurrentLevel);
         
         private readonly Queue<int> levelUpQueue = new();
         private bool isLevelingUp;
-        
+
         // Callbacks
         public event Action OnIncreaseHoleSize;
         public event Action<int> OnConsume;
         public event Action<int> OnLevelUp;
-        
+
         public void Setup(Collider groundCollider, MeshCollider generatedMeshCollider)
         {
             this.groundCollider = groundCollider;
             this.generatedMeshCollider = generatedMeshCollider;
         }
-    
+
         public void AddPoints(Food food)
         {
-            CurrentPoints += food.points;
+            TotalPoints += food.points;
+            ExpOnCurrentLevel += food.points;
 
             if (CurrentLevel < playerSettings.MaxLevel)
             {
-                int elapsedLevel = Mathf.FloorToInt(CurrentPoints / PointsToLevelUpThreshold) + 1;
+                int newLevel = playerSettings.GetLevelFromTotalPoints(TotalPoints);
 
-                if (CurrentLevel < elapsedLevel)
+                if (CurrentLevel < newLevel)
                 {
-                    LevelUp(elapsedLevel);
+                    LevelUp(newLevel);
                 }
             }
-            
+
             OnConsume?.Invoke(food.points);
         }
 
         private void LevelUp(int newLevel)
         {
             int levelsToGain = newLevel - CurrentLevel;
-            
+
             if (levelsToGain <= 0)
             {
                 return;
@@ -64,12 +67,14 @@ namespace EdwinGameDev.Gameplay
                 levelUpQueue.Enqueue(1);
             }
 
-            if (!isLevelingUp)
+            if (isLevelingUp)
             {
-                StartCoroutine(ProcessLevelUps());
+                return;
             }
+
+            StartCoroutine(ProcessLevelUps());
         }
-        
+
         private IEnumerator ProcessLevelUps()
         {
             isLevelingUp = true;
@@ -79,9 +84,10 @@ namespace EdwinGameDev.Gameplay
                 levelUpQueue.Dequeue();
 
                 CurrentLevel++;
+                ExpOnCurrentLevel = 0;
 
                 OnLevelUp?.Invoke(CurrentLevel);
-                
+
                 yield return IncreaseSize();
 
                 yield return new WaitForSeconds(0.1f);
@@ -97,25 +103,25 @@ namespace EdwinGameDev.Gameplay
             float growMultiplier = 1.2f;
             Vector3 endSize = transform.localScale * growMultiplier;
             float fixedY = transform.position.y;
-            
+
             float elapsedTime = 0;
             while (elapsedTime < growDuration)
             {
                 elapsedTime += Time.deltaTime;
                 float time = Mathf.Clamp01(elapsedTime / growDuration);
                 transform.localScale = Vector3.Lerp(startSize, endSize, time);
-                
+
                 Vector3 pos = transform.position;
                 pos.y = fixedY;
-                
+
                 float alpha = Mathf.Sin(time * Mathf.PI) * 0.3f;
                 Color color = lightMaterial.GetColor("_Color");
                 color.a = alpha;
                 lightMaterial.SetColor("_Color", color);
-                
+
                 yield return null;
             }
-            
+
             OnIncreaseHoleSize?.Invoke();
         }
 

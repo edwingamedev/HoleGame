@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using EdwinGameDev.EventSystem;
 using EdwinGameDev.Gameplay;
 using EdwinGameDev.Levels;
@@ -8,7 +10,7 @@ namespace EdwinGameDev.Match
     public class MatchManager : MonoBehaviour
     {
         [Header("Match")] 
-         private Collider groundCollider;
+        [SerializeField] private GameSettings gameSettings;
         [SerializeField] private GameObject holePrefab;
 
         [Header("Mesh")] 
@@ -18,11 +20,9 @@ namespace EdwinGameDev.Match
         [SerializeField] private MeshFilter generatedMeshFilter;
 
         private MeshGenerator meshGenerator;
+        private Collider groundCollider;
 
-        [SerializeField] private GameSettings gameSettings;
-        
-        private float MatchDuration => gameSettings.MatchDuration;
-
+        private float matchDuration;
         private float matchTimer;
         private bool matchIsOn;
         
@@ -30,17 +30,14 @@ namespace EdwinGameDev.Match
         
         private void Start()
         {
-            matchTimer = MatchDuration;
-            
-            DisableFoodCollision();
-
             StartGame();
         }
 
         private void GenerateLevel()
         {
-            LevelController gameSettingsLevel = gameSettings.Stages[gameSettings.selectedLevel];
-            
+            LevelController gameSettingsLevel = gameSettings.Levels[gameSettings.selectedLevel];
+            matchDuration = gameSettingsLevel.LevelDuration();
+            currentLevel = gameSettingsLevel;
             GameObject level = Instantiate(gameSettingsLevel.gameObject);
             level.GetComponent<ILevel>().OnLevelComplete += GameOver;
             
@@ -61,8 +58,9 @@ namespace EdwinGameDev.Match
         private void StartGame()
         {
             GenerateLevel();
-            
+            DisableFoodCollision();
             StartTimer();
+            
             matchIsOn = true;
 
             GlobalEventDispatcher.Publish(new Events.GameStarted());
@@ -77,7 +75,7 @@ namespace EdwinGameDev.Match
 
         private void StartTimer()
         {
-            matchTimer = MatchDuration;
+            matchTimer = matchDuration;
         }
 
         private void Update()
@@ -111,9 +109,9 @@ namespace EdwinGameDev.Match
 
         private void DisableFoodCollision()
         {
-            Food[] foodObjects = FindObjectsOfType<Food>();
+            List<Food> foodOnLevel = currentLevel.GetFoods();
 
-            foreach (Food food in foodObjects)
+            foreach (Food food in foodOnLevel)
             {
                 Collider foodCollider = food.GetComponent<Collider>();
                 if (foodCollider == null)
@@ -123,6 +121,11 @@ namespace EdwinGameDev.Match
 
                 Physics.IgnoreCollision(foodCollider, generatedMeshCollider, true);
             }
+        }
+        
+        private void OnDestroy()
+        {
+            meshGenerator?.Dispose();
         }
     }
 }

@@ -30,9 +30,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8996852376114900396}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -13.8, y: 0.5, z: -8.1}
-  m_LocalScale: {x: 2.4648902, y: 1, z: 2.5897}
+  m_LocalScale: {x: 10, y: 25, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -147,7 +147,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 876279fc848f5154d8a53d5efb9b799b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  points: 3
+  points: 8
 --- !u!114 &1304661370032350787
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160,7 +160,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8115a3ea858f0894389f296e5aabc9a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  fadeSpeed: 5
-  transparentAlpha: 0.3
-  transparencyProperty: Transparency

@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MoveSpeed: 10
   TurnSpeed: 10
-  PointsToLevelUpThreshold: 10
+  NextLevelModifier: 7
+  BaseLevelExp: 10
   MaxLevel: 15
