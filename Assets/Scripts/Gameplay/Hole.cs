@@ -15,12 +15,12 @@ namespace EdwinGameDev.Gameplay
         private MeshCollider generatedMeshCollider;
 
         // Leveling
-        private int TotalPoints { get; set; }
         public int CurrentLevel { get; private set; } = 1;
         public int ProjectedLevel => CurrentLevel + levelUpQueue.Count;
         public int ExpOnCurrentLevel => TotalPoints - playerSettings.TotalExpToReachLevel(CurrentLevel);
         public int ExpToLevelUp => playerSettings.ExpNeededOnLevel(CurrentLevel);
-
+        private int TotalPoints { get; set; }
+        
         private readonly Queue<int> levelUpQueue = new();
         private bool isLevelingUp;
 

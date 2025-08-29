@@ -50,14 +50,16 @@ namespace EdwinGameDev.Utils
             List<FadeableObject> toRemove = new();
             foreach (KeyValuePair<FadeableObject, bool> kvp in fadingObjects)
             {
-                if (!currentlyHit.Contains(kvp.Key))
+                if (currentlyHit.Contains(kvp.Key))
                 {
-                    kvp.Key.FadeTo(1f, fadeSpeed);
+                    continue;
+                }
+
+                kvp.Key.FadeTo(1f, fadeSpeed);
                 
-                    if (Mathf.Abs(kvp.Key.GetCurrentAlpha() - 1f) < 0.01f)
-                    {
-                        toRemove.Add(kvp.Key);
-                    }
+                if (Mathf.Abs(kvp.Key.GetCurrentAlpha() - 1f) < 0.01f)
+                {
+                    toRemove.Add(kvp.Key);
                 }
             }
 
